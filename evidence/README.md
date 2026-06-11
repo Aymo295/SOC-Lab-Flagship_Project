@@ -1,4 +1,4 @@
-Evidence directory guidance
+# Evidence Handling
 
 - This `evidence/` folder is a working area for local evidence and raw telemetry used during investigations.
 - Do NOT commit raw, unsanitized telemetry to the public repository.

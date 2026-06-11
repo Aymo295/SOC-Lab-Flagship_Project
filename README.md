@@ -75,7 +75,7 @@ Build a realistic SOC environment focused on telemetry validation, detection eng
 
 ## Live Validation Goals
 
-The lab validates both detection logic and SOC analyst capability:
+The lab is designed to demonstrate detection engineering and SOC analyst workflows:
 
 1. **Telemetry validation** — confirm all expected event types flow into Splunk and Wazuh
 2. **Detection validation** — run searches against live data and confirm precision/recall

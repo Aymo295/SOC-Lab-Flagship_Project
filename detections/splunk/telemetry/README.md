@@ -13,6 +13,6 @@ Monitor Splunk ingestion health, source silence, and event-volume baselines.
 ## Searches
 
 - `ingestion-delay.spl` - calculates `_indextime - _time` for each sourcetype to detect ingestion lag.
-- `source-silence.spl` - identifies sources that have not reported data within the configured window.
+- `source-silence.spl` - calculates the time since each source last reported so a silence threshold can be applied during validation.
 - `sysmon-event-volume.spl` - monitors Sysmon event ingestion for event-volume baselining.
 - `security-event-volume.spl` - monitors Windows Security event ingestion for event-volume baselining.
