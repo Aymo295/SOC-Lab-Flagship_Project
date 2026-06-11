@@ -197,7 +197,7 @@
 2. **Which sources are silent or unreliable?**
    - Monitor ingestion delay (`_indextime - _time`) per sourcetype
    - Establish baseline and alert on anomalies
-   - Use `notes/telemetry_health.spl` search
+   - Use searches in `detections/splunk/telemetry/`
 
 3. **Does the detection logic fire on real attack behavior?**
    - After executing a controlled attack, run the detection search
@@ -205,7 +205,7 @@
    - Tune field names and thresholds as needed
 
 4. **What is the SOC analyst's triage workflow?**
-   - For each alert, follow steps in `notes/response_playbooks.md`
+   - For each alert, follow steps in `docs/response-playbooks.md`
    - Document containment options and business impact
    - Test both SOC 1 (quick triage) and SOC 2 (deep investigation) workflows
 
@@ -226,7 +226,7 @@
 ### Threshold Tuning
 - Initial thresholds (e.g., "5 failed logons") are starting points
 - Adjust based on environment baseline (normal user behavior, service accounts, etc.)
-- Use `notes/failed_logon_investigation.md` to document tuning decisions
+- Use `investigations/templates/failed-logon-investigation.md` to document tuning decisions
 
 ---
 
@@ -245,7 +245,7 @@
 
 1. Run the pre-validation checklist daily during Phase 1.5
 2. Document any ingestion issues in this file
-3. Begin populating `splunk/searches/` with tuned queries
-4. Prepare attack scenarios in `notes/attack_playbooks.md` (future)
+3. Begin populating `detections/splunk/` with tuned queries
+4. Prepare attack scenarios in `attack-simulations/` (future)
 5. Establish alerting and dashboards in Splunk
 6. Schedule Phase 3 attack simulation exercises
