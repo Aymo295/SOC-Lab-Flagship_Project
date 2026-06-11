@@ -1,0 +1,5 @@
+# Sysmon Event Count Baseline
+# Monitor Sysmon event ingestion to detect zero-volume alerts
+
+index=sysmon host=WIN-WS01
+| stats count by EventID

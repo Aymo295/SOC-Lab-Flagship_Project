@@ -1,0 +1,5 @@
+# Windows Security Event Count Baseline
+# Monitor Windows Security event ingestion
+
+index=wineventlog sourcetype="WinEventLog:Security" host=WIN-WS01
+| stats count by EventCode

@@ -67,9 +67,9 @@ Build a realistic SOC environment focused on telemetry validation, detection eng
 5. **Impact**: Timeline reconstruction, containment planning, business impact assessment
 
 ### Detection Coverage
-- `splunk/searches/` — production-ready SPL queries for each detection
-- `sigma/` — portable detection rules for portability and future SIEM migration
-- `notes/response_playbooks.md` — SOC 1/2 analyst workflows and triage steps
+- `detections/splunk/` — production-ready SPL queries for each detection
+- `detections/sigma/` — portable detection rules for portability and future SIEM migration
+- `docs/response-playbooks.md` — SOC 1/2 analyst workflows and triage steps
 
 ---
 
@@ -89,32 +89,26 @@ The lab validates both detection logic and SOC analyst capability:
 ```
 soc-analst-lab/
 ├── README.md                              # This file
-├── notes/
-│   ├── lab_overview.md                    # Live environment status and troubleshooting
-│   ├── response_playbooks.md              # SOC 1/2 workflows for each detection
-│   ├── failed_logon_investigation.md      # Incident response template and exercise
-│   └── live_log_capture.md                # Methods for collecting Splunk evidence
-├── splunk/
-│   └── searches/
-│       ├── failed_logons.spl              # Password spray detection (updated)
-│       ├── 4625_password_spray.spl        # Failed logon threshold logic
-│       ├── 4624_rdp_success.spl           # Successful RDP logon detection
-│       ├── 4672_privileged_logon.spl      # Privileged logon anomalies
-│       ├── sysmon_powershell_abuse.spl    # Suspicious PowerShell commands
-│       ├── sysmon_parent_child_process.spl # Process chain detection
-│       ├── sysmon_dns_tunneling.spl       # DNS-based C2 indicators
-│       ├── sysmon_registry_persistence.spl # Registry modification detection
-│       └── telemetry_health.spl           # Ingestion health and heartbeat
-├── sigma/
-│   ├── 4625_password_spray.yml            # Portable failed logon spray rule
-│   ├── 4624_rdp_success.yml               # Portable RDP detection rule
-│   ├── 4672_privileged_logon.yml          # Portable privileged logon rule
-│   ├── sysmon_powershell_abuse.yml        # Portable PowerShell detection rule
-│   ├── sysmon_parent_child_process.yml    # Portable process chain rule
-│   ├── sysmon_dns_tunneling.yml           # Portable DNS tunneling rule
-│   └── sysmon_registry_persistence.yml    # Portable persistence detection rule
-└── logs/
-    └── (Live Splunk-ingested logs only; no simulated attack data)
+├── docs/
+│   ├── lab-overview.md                    # Live environment status and troubleshooting
+│   ├── response-playbooks.md              # SOC 1/2 workflows for each detection
+│   └── evidence-handling.md               # Methods for collecting Splunk evidence
+├── detections/
+│   ├── splunk/
+│   │   ├── authentication/                # Authentication SPL searches
+│   │   ├── command-and-control/           # C2 SPL searches
+│   │   ├── execution/                     # Execution SPL searches
+│   │   ├── persistence/                   # Persistence SPL searches
+│   │   └── telemetry/                     # Split ingestion health searches
+│   └── sigma/                             # Portable detection rules
+├── investigations/
+│   ├── templates/
+│   │   └── failed-logon-investigation.md  # Incident response template and exercise
+│   └── completed/
+├── evidence/
+├── scripts/
+│   └── python/
+└── attack-simulations/
 ```
 
 ---
@@ -122,7 +116,7 @@ soc-analst-lab/
 ## Getting Started
 
 1. **Review the lab environment**
-   - See `notes/lab_overview.md` for current telemetry pipeline status
+   - See `docs/lab-overview.md` for current telemetry pipeline status
    - Run the troubleshooting checklist to validate live ingestion
 
 2. **Validate Splunk ingestion**
@@ -133,18 +127,18 @@ soc-analst-lab/
    - Verify Windows Security and Sysmon Event Log sourcetypes are present
 
 3. **Run a detection search**
-   - Navigate to `splunk/searches/failed_logons.spl`
+   - Navigate to `detections/splunk/authentication/failed_logons.spl`
    - Adapt field names to your Splunk configuration if needed
    - Run the search to verify 4625 events are detected
 
 4. **Generate attack logs**
    - Use your Kali attacker node to execute a password spray or RDP brute-force attack
    - Monitor the Splunk search output in real time
-   - Document observations in `notes/failed_logon_investigation.md`
+   - Document observations in `investigations/templates/failed-logon-investigation.md`
 
 5. **Document your response**
-   - Follow the SOC workflows in `notes/response_playbooks.md`
-   - Complete the incident response exercise in `notes/failed_logon_investigation.md`
+   - Follow the SOC workflows in `docs/response-playbooks.md`
+   - Complete the incident response exercise in `investigations/templates/failed-logon-investigation.md`
    - Map findings to business impact
 
 ---
@@ -172,9 +166,9 @@ soc-analst-lab/
 ## Next Steps
 
 1. Complete Phase 1.5 telemetry reliability monitoring (heartbeat validation, ingestion delay analysis)
-2. Populate `splunk/searches/` with queries tuned to your live Splunk environment
+2. Populate `detections/splunk/` with queries tuned to your live Splunk environment
 3. Execute controlled attack simulations against WIN-WS01
-4. Validate each detection and capture evidence in `notes/`
+4. Validate each detection and capture sanitized evidence in `evidence/`
 5. Build incident response playbooks based on observed attack patterns
 6. Iterate on detection logic and false positive tuning
 
