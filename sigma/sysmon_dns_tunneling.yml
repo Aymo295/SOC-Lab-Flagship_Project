@@ -1,0 +1,34 @@
+title: Suspicious DNS Query Patterns - C2 or Exfiltration
+id: 6f789012-abcd-ef12-3456-890abcdef123
+status: experimental
+description: Detects DNS query patterns consistent with DNS tunneling, C2 communication, or data exfiltration
+references:
+    - https://attack.mitre.org/techniques/T1071/004
+author: SOC Lab
+date: 2024/06/10
+modified: 2024/06/10
+tags:
+    - attack.command_and_control
+    - attack.t1071_004
+    - detection.sysmon_dns
+logsource:
+    product: windows
+    service: sysmon
+    definition: 'EventID: 22'
+detection:
+    selection:
+        EventID: 22
+    suspicious_patterns:
+        - QueryName|contains: '.'  # Looking for subdomain chains
+        - QueryName|length: '>50'   # Very long hostnames
+        - QueryName|contains: 'bit'  # Common exfil domain patterns
+        - QueryName|contains: 'dnsexfil'
+    high_volume:
+        - ProcessId: '*'  # Correlate on process
+            | count() > 100  # High query volume
+    condition: selection and (suspicious_patterns or high_volume)
+falsepositives:
+    - CDN queries with subdomains
+    - Cloud service DNS lookups
+    - Browser prefetch or safety checks
+level: medium

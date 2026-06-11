@@ -1,0 +1,27 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Editor / OS
+.vscode/
+Thumbs.db
+Desktop.ini
+
+# Logs and runtime data
+logs/
+*.log
+
+# Environment
+.env
+.env.*
+
+# PowerShell
+*.ps1.xml
+*.psd1
+*.psc1
+
+# Build / distribution
+dist/
+build/

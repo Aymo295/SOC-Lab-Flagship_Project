@@ -1,0 +1,26 @@
+"""
+Detection: Parent-Child Process Chain Abuse
+Purpose: Identify suspicious process chain relationships (PowerShell → cmd, wmic, etc.)
+Detection Method: Process tree correlation
+Expected Log Source: Sysmon Event Log (EventID 1 - Process Creation)
+Expected Sourcetype: XmlWinEventLog:Microsoft-Windows-Sysmon/Operational
+
+LIVE ADAPTATION REQUIRED:
+- Verify ParentImage and Image field names match your Sysmon parsing
+- Update suspicious child process list based on known attack patterns
+- Adjust to match your environment's baseline process creation
+"""
+
+# Suspicious Process Chain Detection
+# Alert when PowerShell or other suspicious parents spawn known attack tools
+
+index=sysmon sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" 
+EventID=1 host=WIN-WS01
+| where (ParentImage LIKE "%powershell.exe%" OR ParentImage LIKE "%cmd.exe%" OR ParentImage LIKE "%explorer.exe%")
+  AND (Image LIKE "%cmd.exe" OR Image LIKE "%powershell.exe" OR Image LIKE "%wmic.exe" 
+    OR Image LIKE "%regsvcs.exe" OR Image LIKE "%mshta.exe" OR Image LIKE "%cscript.exe"
+    OR Image LIKE "%wscript.exe" OR Image LIKE "%rundll32.exe")
+| table _time, User, ParentImage, Image, CommandLine, ParentCommandLine, ProcessId, ParentProcessId
+| sort _time
+
+# Note: May produce many events; consider adding filters for CommandLine patterns or time windows

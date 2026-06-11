@@ -1,0 +1,32 @@
+"""
+Detection: Successful RDP Logon After Failed Attempts
+Purpose: Identify successful RDP logon (Logon Type 10) immediately following repeated failed logons
+Detection Method: Sequence Analysis
+Expected Log Source: Windows Security Event Log (EventCode 4624, 4625)
+Expected Sourcetype: WinEventLog:Security
+
+LIVE ADAPTATION REQUIRED:
+- Verify Logon_Type field (may be "LogonType" or "logon_type" depending on Splunk version)
+- Confirm Source_Network_Address field name matches your environment
+- Adjust time window (15 minutes) based on your tolerance for related events
+"""
+
+# RDP Success After Failed Attempts
+# Alert when RDP logon succeeds after repeated failures from same source
+
+index=wineventlog sourcetype="WinEventLog:Security" host=WIN-WS01
+(EventCode=4625 OR EventCode=4624)
+| eval event_type=case(
+    EventCode=4625, "failed",
+    EventCode=4624, "success"
+)
+| stats count(eval(event_type="failed")) as failed_count,
+         count(eval(event_type="success")) as success_count,
+         values(Logon_Type) as logon_types,
+         dc(Account_Name) as unique_accounts
+         by Source_Network_Address, host
+| where failed_count >= 5 AND success_count > 0
+| search logon_types=10
+| table Source_Network_Address, failed_count, success_count, unique_accounts, host
+| rename Source_Network_Address as source_ip, Logon_Type as logon_type
+| sort - failed_count

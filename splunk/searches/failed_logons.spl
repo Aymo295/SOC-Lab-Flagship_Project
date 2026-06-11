@@ -1,0 +1,20 @@
+"""
+Detection: Failed Logon Summary
+Purpose: Baseline failed logon activity across accounts and sources
+Log Source: Windows Security Event Log (EventCode 4625)
+Sourcetype: WinEventLog:Security
+
+LIVE ADAPTATION REQUIRED:
+- Verify field names for your Splunk version:
+  * Account_Name (may be 'user' or 'Account')
+  * Source_Network_Address (may be 'src_ip' or 'Source_IP')
+- Review threshold (5 failures) against your environment baseline
+- Consider adding time-based windowing: earliest=-24h
+"""
+
+# Basic Failed Logon Summary
+index=wineventlog EventCode=4625 host=WIN-WS01
+| stats count as failed_logon_count by Account_Name, Source_Network_Address, host
+| where failed_logon_count >= 5
+| sort - failed_logon_count
+| table Source_Network_Address, Account_Name, failed_logon_count, host

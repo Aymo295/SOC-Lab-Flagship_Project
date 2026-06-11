@@ -1,0 +1,26 @@
+"""
+Detection: Privileged Logon Anomaly
+Purpose: Identify EventCode 4672 (Special Privileges Assigned) from unusual accounts or unusual times
+Detection Method: Anomaly Detection
+Expected Log Source: Windows Security Event Log (EventCode 4672)
+Expected Sourcetype: WinEventLog:Security
+
+LIVE ADAPTATION REQUIRED:
+- Identify normal/baseline privileged accounts in your environment
+- Whitelist known service accounts and admin accounts
+- Adjust time window and baseline based on normal IT operations
+"""
+
+# Privileged Logon Detection
+# Alert on EventCode 4672 (Assignment of Admin Rights) from unexpected accounts
+
+index=wineventlog sourcetype="WinEventLog:Security" EventCode=4672 host=WIN-WS01
+| where Account_Name != "SYSTEM" AND Account_Name != "LOCAL SERVICE" 
+  AND Account_Name != "NETWORK SERVICE"
+| stats count by Account_Name, host, Privileges
+| where count >= 1
+| table Account_Name, host, Privileges, count
+| sort - count
+
+# Note: To baseline known privileged accounts, add whitelist:
+# | where NOT(Account_Name IN ("DOMAIN\AdminAccount", "DOMAIN\ServiceAcct"))

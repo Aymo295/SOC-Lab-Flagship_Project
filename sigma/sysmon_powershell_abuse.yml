@@ -1,0 +1,38 @@
+title: Suspicious PowerShell Execution
+id: 4d5e6f78-90ab-cdef-1234-567890abcdef
+status: experimental
+description: Detects PowerShell process creation with suspicious command-line arguments indicating potential code execution or obfuscation
+references:
+    - https://attack.mitre.org/techniques/T1059/001
+    - https://attack.mitre.org/techniques/T1086
+author: SOC Lab
+date: 2024/06/10
+modified: 2024/06/10
+tags:
+    - attack.execution
+    - attack.t1059_001
+    - attack.t1086
+    - detection.sysmon_process_creation
+logsource:
+    product: windows
+    service: sysmon
+    definition: 'EventID: 1'
+detection:
+    selection_powershell:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    selection_suspicious_commands:
+        CommandLine|contains:
+            - '-EncodedCommand'
+            - 'IEX'
+            - 'Invoke-Expression'
+            - 'DownloadString'
+            - '.net.webclient'
+            - 'FromBase64String'
+    condition: selection_powershell and selection_suspicious_commands
+falsepositives:
+    - Legitimate PowerShell scripts with obfuscation for licensing or protection
+    - Administrative PowerShell automation
+    - Deployment tools using encoded commands
+level: high

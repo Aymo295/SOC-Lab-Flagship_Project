@@ -1,0 +1,40 @@
+title: Suspicious Process Chain - Parent-Child Relationships
+id: 5e6f7890-abcd-ef12-3456-7890abcdef12
+status: experimental
+description: Detects suspicious parent-child process relationships indicating potential attack execution or abuse
+references:
+    - https://attack.mitre.org/techniques/T1566/
+    - https://attack.mitre.org/techniques/T1204/
+author: SOC Lab
+date: 2024/06/10
+modified: 2024/06/10
+tags:
+    - attack.execution
+    - attack.lateral_movement
+    - detection.sysmon_process_creation
+logsource:
+    product: windows
+    service: sysmon
+    definition: 'EventID: 1'
+detection:
+    selection_suspicious_parents:
+        ParentImage|endswith:
+            - '\powershell.exe'
+            - '\cmd.exe'
+            - '\explorer.exe'
+    selection_suspicious_children:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\wmic.exe'
+            - '\regsvcs.exe'
+            - '\mshta.exe'
+            - '\cscript.exe'
+            - '\wscript.exe'
+            - '\rundll32.exe'
+    condition: selection_suspicious_parents and selection_suspicious_children
+falsepositives:
+    - Normal system administration activities
+    - Software deployment and configuration management
+    - System troubleshooting scripts
+level: medium

@@ -1,0 +1,31 @@
+"""
+Detection: DNS Tunneling / C2 Communication
+Purpose: Identify suspicious DNS query patterns indicating potential C2 or data exfiltration
+Detection Method: Query pattern anomaly detection
+Expected Log Source: Sysmon DNS Queries (EventID 22)
+Expected Sourcetype: XmlWinEventLog:Microsoft-Windows-Sysmon/Operational
+
+LIVE ADAPTATION REQUIRED:
+- Verify QueryName, Image, ProcessId field names match your Sysmon parsing
+- Build whitelist of known/legitimate DNS query patterns for your network
+- Tune threshold for query volume and hostname length based on baseline
+- Add known C2 domains or DGA signatures as needed
+"""
+
+# DNS Tunneling / C2 Detection
+# Alert on suspicious DNS query patterns (high volume, unusual domains, subdomains, etc.)
+
+index=sysmon sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" 
+EventID=22 host=WIN-WS01
+| eval hostname_len=len(QueryName)
+| where hostname_len > 50
+  OR QueryName LIKE "%.%.%.%.%" 
+  OR QueryName LIKE "*bit*.com" 
+  OR QueryName LIKE "*dnsexfil*.com"
+| stats count, dc(QueryName) as unique_queries by Image, ProcessId, User
+| where count > 10
+| table Image, ProcessId, User, count, unique_queries
+| sort - count
+
+# Note: This is a starting point; refine based on your DNS baseline and threat intelligence
+# Consider adding Query Type = TXT records for data exfiltration detection

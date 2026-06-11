@@ -1,0 +1,31 @@
+title: Privileged Logon Assignment
+id: 3c4d5e6f-7890-abcd-ef12-34567890abcd
+status: experimental
+description: Detects assignment of admin rights (EventID 4672) from non-standard system accounts or unusual contexts
+references:
+    - https://attack.mitre.org/techniques/T1548/
+author: SOC Lab
+date: 2024/06/10
+modified: 2024/06/10
+tags:
+    - attack.privilege_escalation
+    - attack.t1548
+    - detection.windows_security
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4672
+    filter_known_accounts:
+        Account_Name|endswith:
+            - 'SYSTEM'
+            - 'LOCAL SERVICE'
+            - 'NETWORK SERVICE'
+            - '$'  # Computer accounts
+    condition: selection and not filter_known_accounts
+falsepositives:
+    - Scheduled tasks with elevated privileges
+    - Service accounts performing administrative functions
+    - System maintenance and patching operations
+level: medium

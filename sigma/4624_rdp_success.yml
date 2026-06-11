@@ -1,0 +1,39 @@
+title: Successful RDP Logon After Failed Attempts
+id: 2b3c4d5e-6f78-90ab-cdef-1234567890ab
+status: experimental
+description: Detects successful RDP logon (EventID 4624, Logon Type 10) following multiple failed logon attempts from the same source IP
+references:
+    - https://attack.mitre.org/techniques/T1110/
+    - https://attack.mitre.org/techniques/T1021/001
+author: SOC Lab
+date: 2024/06/10
+modified: 2024/06/10
+tags:
+    - attack.credential_access
+    - attack.lateral_movement
+    - attack.t1110
+    - attack.t1021_001
+    - detection.windows_security
+logsource:
+    product: windows
+    service: security
+detection:
+    failed_logons:
+        EventID: 4625
+        Logon_Type:
+            - 10
+            - 3
+    successful_logon:
+        EventID: 4624
+        Logon_Type: 10
+    filter_source:
+        Source_Network_Address:
+            - 127.0.0.1
+            - ::1
+    timeframe: 15m
+    condition: (failed_logons and not filter_source) | count() >= 5, then successful_logon
+falsepositives:
+    - Legitimate RDP access after authentication issues
+    - Users entering incorrect password followed by correct password
+    - Automated account lockout and unlock sequences
+level: high

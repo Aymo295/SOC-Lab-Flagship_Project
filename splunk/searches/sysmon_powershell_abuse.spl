@@ -1,0 +1,30 @@
+"""
+Detection: Suspicious PowerShell Execution
+Purpose: Identify PowerShell process creation with suspicious command-line arguments
+Detection Method: Signature-based filtering
+Expected Log Source: Sysmon Event Log (EventID 1 - Process Creation)
+Expected Sourcetype: XmlWinEventLog:Microsoft-Windows-Sysmon/Operational
+
+LIVE ADAPTATION REQUIRED:
+- Verify CommandLine, Image, ParentImage field names match your Splunk Sysmon parsing
+- Adjust suspicious keywords based on your environment (add/remove patterns)
+- Consider case-sensitivity and encoding variations
+- Add parent process whitelisting as needed
+"""
+
+# Suspicious PowerShell Execution Detection
+# Alert when PowerShell is launched with suspicious command-line parameters
+
+index=sysmon sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" 
+EventID=1 host=WIN-WS01 Image="*powershell.exe"
+| where CommandLine LIKE "%EncodedCommand%" 
+  OR CommandLine LIKE "%IEX%"
+  OR CommandLine LIKE "%Invoke-Expression%"
+  OR CommandLine LIKE "%DownloadString%"
+  OR CommandLine LIKE "%net.webclient%"
+  OR CommandLine LIKE "%.exe *-e *"
+| table _time, User, Image, CommandLine, ParentImage, ParentCommandLine, ProcessId
+| sort _time
+
+# Note: Add parent process filtering if needed:
+# | where ParentImage NOT IN ("explorer.exe", "cmd.exe", "conhost.exe", "services.exe")

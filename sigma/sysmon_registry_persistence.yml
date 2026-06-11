@@ -1,0 +1,43 @@
+title: Registry Persistence Modification
+id: 7890abcd-ef12-3456-7890-abcdef123456
+status: experimental
+description: Detects modifications to registry keys commonly used for persistence mechanisms
+references:
+    - https://attack.mitre.org/techniques/T1547/001
+    - https://attack.mitre.org/techniques/T1112/
+author: SOC Lab
+date: 2024/06/10
+modified: 2024/06/10
+tags:
+    - attack.persistence
+    - attack.t1547
+    - attack.t1547_001
+    - attack.t1112
+    - detection.sysmon_registry
+logsource:
+    product: windows
+    service: sysmon
+    definition: 'EventID: 12 or EventID: 13'
+detection:
+    selection_registry_events:
+        EventID:
+            - 12
+            - 13
+    selection_persistence_keys:
+        TargetObject|contains:
+            - '\CurrentVersion\Run'
+            - '\CurrentVersion\RunOnce'
+            - '\Services\'
+            - '\Winlogon\'
+            - '\Startup\'
+    filter_known_processes:
+        Image|endswith:
+            - '\msiexec.exe'
+            - '\svchost.exe'
+            - '\wuauclt.exe'
+    condition: selection_registry_events and selection_persistence_keys and not filter_known_processes
+falsepositives:
+    - Software installation and configuration
+    - Windows updates and service management
+    - Legitimate administrator scripts
+level: high

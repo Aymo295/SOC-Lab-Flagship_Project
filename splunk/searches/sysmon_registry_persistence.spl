@@ -1,0 +1,30 @@
+"""
+Detection: Registry Persistence Modification
+Purpose: Identify unauthorized modifications to registry persistence keys
+Detection Method: Registry key/value filtering
+Expected Log Source: Sysmon Registry Events (EventID 12/13 - Registry Create/Set)
+Expected Sourcetype: XmlWinEventLog:Microsoft-Windows-Sysmon/Operational
+
+LIVE ADAPTATION REQUIRED:
+- Verify TargetObject, Image field names match your Sysmon parsing
+- Build whitelist of known/authorized registry modifications
+- Filter out known installers and legitimate processes
+- Adjust to match your environment's baseline
+"""
+
+# Registry Persistence Detection
+# Alert when registry modifications occur under known persistence keys
+
+index=sysmon sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" 
+(EventID=12 OR EventID=13) host=WIN-WS01
+| where TargetObject LIKE "%\\CurrentVersion\\Run%" 
+  OR TargetObject LIKE "%\\CurrentVersion\\RunOnce%" 
+  OR TargetObject LIKE "%\\Services\\%" 
+  OR TargetObject LIKE "%\\Winlogon\%" 
+  OR TargetObject LIKE "%\\StartupFolder%"
+| table _time, Image, User, EventID, TargetObject, Details, UtcTime
+| sort _time
+
+# Note: May produce many events from legitimate installers and system processes
+# Consider adding whitelist filters:
+# | where Image NOT IN ("C:\\Windows\\System32\\installer.exe", "C:\\Program Files\\...")
