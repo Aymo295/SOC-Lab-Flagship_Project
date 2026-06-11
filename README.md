@@ -1,198 +1,84 @@
 # Cybersecurity Flagship SOC Lab
 
-## Project Purpose
+This repository documents a home SOC lab focused on telemetry validation, detection engineering, controlled testing, and analyst workflow development. The lab uses Splunk, Wazuh, Sysmon, Windows Security events, a monitored Windows endpoint, an Ubuntu monitoring server, and a Kali system reserved for controlled simulations.
 
-Build a realistic SOC environment focused on telemetry validation, detection engineering, incident response, and business impact analysis. This lab simulates a full attack lifecycle from initial access through persistence, with corresponding detection coverage, analyst workflows, and security operations improvements.
+The repository also records engineering lessons from configuring, troubleshooting, and validating the telemetry pipeline.
 
----
+The project is intentionally evidence-driven. Planned work, draft detections, and validation tasks are separated from completed findings so the repository does not overstate results.
 
-## Environment Architecture
+## Lab Architecture
 
-### SOC Brain (Ubuntu)
-- **Splunk Enterprise** — centralized log ingestion, search, and alerting
-- **Wazuh Manager** — agent-based telemetry collection and behavioral alerting
-- **Chrony NTP Server** — time synchronization for event correlation
+- **Ubuntu monitoring server:** Splunk Enterprise, Wazuh Manager, and Chrony.
+- **Windows endpoint:** Windows 11 Enterprise with Sysmon, Splunk Universal Forwarder, and Wazuh Agent.
+- **Kali system:** isolated node for future controlled simulations.
 
-### Monitored Endpoint (Windows 11 Enterprise)
-- **Hostname**: WIN-WS01
-- **Telemetry sources**:
-  - Windows Security Event Log (4625, 4624, 4672, etc.)
-  - Sysmon (Process creation, network connections, registry, LSASS access, DNS, etc.)
-- **Forwarder**: Splunk Universal Forwarder
+## Current Status
 
-### Attacker Node (Kali Linux)
-- **Status**: Provisioned; awaiting active use for controlled attack simulation
-- **Purpose**: Execute attack scenarios against WIN-WS01 under observation
+| Area | Status | Notes |
+|---|---|---|
+| Telemetry pipeline | Partially validated | Sysmon Event ID 1 ingestion, Windows Security event forwarding, Wazuh connectivity, network isolation, firewall configuration, and time synchronization have been documented as validated. Ongoing work remains for ingestion delay, heartbeat, source silence, and drift monitoring. |
+| Detection engineering | Experimental | SPL and Sigma content is organized by detection category. Searches and rules still require syntax review, field mapping, tuning, and live validation against lab telemetry. |
+| Controlled attack simulation | Planned | Controlled attack simulations and completed investigations have not yet been published. Results will be added only after execution, validation, and sanitization. |
+| Evidence handling | Draft guidance | Evidence handling procedures exist, but raw telemetry and private evidence must not be committed. |
+| Completed investigations | Not yet populated | Completed cases will be added only after real validation evidence exists. |
 
----
+## Repository Navigation
 
-## Current Project Status
+- [Lab overview](docs/lab-overview.md) - environment summary, telemetry status, validation checklist, troubleshooting, and next steps.
+- [Response playbooks](docs/response-playbooks.md) - SOC 1 and SOC 2 triage workflows for the planned detection areas.
+- [Evidence handling](docs/evidence-handling.md) - guidance for exporting, preserving, and sanitizing investigation evidence.
+- [Splunk detections](detections/splunk/) - experimental SPL searches grouped by detection category.
+- [Sigma detections](detections/sigma/) - portable draft detection rules grouped by detection category.
+- [Telemetry health searches](detections/splunk/telemetry/) - separate SPL searches for ingestion delay, source silence, and event-volume baselines.
+- [Investigation templates](investigations/templates/) - reusable investigation documentation templates.
+- [Completed investigations](investigations/completed/) - validated investigation records with sanitized supporting evidence will be added here.
+- [Attack simulations](attack-simulations/) - controlled simulation plans and observed results will be documented here after execution.
+- [Evidence publication area](evidence/) - guidance and repository locations for sanitized investigation artifacts.
+- [Utility scripts](scripts/python/) - supporting scripts for lab workflows.
 
-### Phase 1 / Phase 1.5: Telemetry Validation (Complete/In Progress)
-- ✅ Sysmon Event ID 1 ingestion verified into Splunk
-- ✅ Windows Security event log forwarding verified
-- ✅ Wazuh manager/agent pipeline active
-- ✅ Host-only network isolation and firewall validated
-- ✅ Time synchronization baseline established
-- ⏳ Ingestion delay monitoring and heartbeat validation in progress
+## Project Phases
 
-### Phase 2: Detection Engineering (Planned)
-- Priority detections:
-  - `4625` — Failed logon password spray detection
-  - `4624` — Successful RDP logon detection (Logon Type 10)
-  - `4672` — Privileged logon anomalies
-  - `Sysmon Event ID 1` — Suspicious PowerShell execution
-  - `Sysmon Event ID 10` — LSASS credential access
-  - Process chain correlations (parent/child relationships)
-  - DNS tunneling / C2-style communication
-  - Registry persistence modification
+1. **Telemetry validation** - confirm endpoint, Splunk, Wazuh, and time-synchronization behavior.
+2. **Detection engineering** - organize and tune experimental SPL and Sigma detections.
+3. **Controlled simulation** - execute safe attack scenarios only when ready, then validate detections against real lab telemetry.
+4. **Investigation and response** - document confirmed findings, analyst decisions, evidence, and business impact.
+5. **Automation and dashboards** - build repeatable reporting and monitoring once the underlying detections are validated.
 
-### Phase 3: Controlled Attack Simulation (Planned)
-- Password spray / RDP brute-force entry
-- Suspicious PowerShell execution and parent-child process abuse
-- DNS tunneling or safe C2-style communication
-- Registry persistence
+## Detection Areas
 
-### Phase 4+: Incident Response, Automation, Dashboards (Future)
+The lab is organized around these planned detection themes:
 
----
+- Failed logon and password spray activity.
+- Successful RDP logon after repeated failures.
+- Privileged logon anomalies.
+- Suspicious PowerShell execution.
+- Suspicious parent-child process chains.
+- DNS tunneling or C2-style communication.
+- Registry persistence behavior.
+- Telemetry health and ingestion reliability.
 
-## Attack and Detection Roadmap
+## Evidence and Privacy Rules
 
-### Attack Flow
-1. **Initial Access**: Password spray / brute-force RDP entry → detect via `4625` threshold, escalate on `4624` success
-2. **Execution**: Suspicious PowerShell command-line execution → detect via Sysmon Event ID 1 anomalies
-3. **Process Abuse**: Parent-child process chains (PowerShell → cmd/wmic/etc.) → detect via process chain correlation
-4. **Persistence/C2**: Registry modification or DNS tunneling → detect via Sysmon Event ID 12/13 or network DNS analysis
-5. **Impact**: Timeline reconstruction, containment planning, business impact assessment
+- Do not commit raw telemetry, private logs, screenshots with sensitive data, credentials, tokens, or public IP addresses.
+- Store private evidence outside the repository or sanitize it before publication.
+- Add completed investigations only after real validation evidence exists.
+- Keep detection status accurate: draft, experimental, validated, or completed.
 
-### Detection Coverage
-- `detections/splunk/` — experimental SPL searches for validation and tuning
-- `detections/sigma/` — portable detection rules for portability and future SIEM migration
-- `docs/response-playbooks.md` — SOC 1/2 analyst workflows and triage steps
+## Manual Validation Still Required
 
----
-
-## Live Validation Goals
-
-The lab is designed to demonstrate detection engineering and SOC analyst workflows:
-
-1. **Telemetry validation** — confirm all expected event types flow into Splunk and Wazuh
-2. **Detection validation** — run searches against live data and confirm precision/recall
-3. **Response validation** — use real search output to drive incident response workflows
-4. **Business impact mapping** — tie technical findings to organizational risk and remediation priorities
-
----
-
-## Repository Structure
-
-```
-soc-analst-lab/
-├── README.md                              # This file
-├── docs/
-│   ├── lab-overview.md                    # Live environment status and troubleshooting
-│   ├── response-playbooks.md              # SOC 1/2 workflows for each detection
-│   └── evidence-handling.md               # Methods for collecting Splunk evidence
-├── detections/
-│   ├── splunk/
-│   │   ├── authentication/                # Authentication SPL searches
-│   │   ├── command-and-control/           # C2 SPL searches
-│   │   ├── execution/                     # Execution SPL searches
-│   │   ├── persistence/                   # Persistence SPL searches
-│   │   └── telemetry/                     # Split ingestion health searches
-│   └── sigma/                             # Portable detection rules
-├── investigations/
-│   ├── templates/
-│   │   └── failed-logon-investigation.md  # Incident response template and exercise
-│   └── completed/
-├── evidence/
-├── scripts/
-│   └── python/
-└── attack-simulations/
-```
-
----
-
-## Getting Started
-
-1. **Review the lab environment**
-   - See `docs/lab-overview.md` for current telemetry pipeline status
-   - Run the troubleshooting checklist to validate live ingestion
-
-2. **Validate Splunk ingestion**
-   ```
-   # In Splunk, run:
-   host=WIN-WS01 | stats count by sourcetype
-   ```
-   - Verify Windows Security and Sysmon Event Log sourcetypes are present
-
-3. **Run a detection search**
-   - Navigate to `detections/splunk/authentication/failed_logons.spl`
-   - Adapt field names to your Splunk configuration if needed
-   - Run the search to verify 4625 events are detected
-
-4. **Generate attack logs**
-   - Use your Kali attacker node to execute a password spray or RDP brute-force attack
-   - Monitor the Splunk search output in real time
-   - Document observations in `investigations/templates/failed-logon-investigation.md`
-
-5. **Document your response**
-   - Follow the SOC workflows in `docs/response-playbooks.md`
-   - Complete the incident response exercise in `investigations/templates/failed-logon-investigation.md`
-   - Map findings to business impact
-
----
-
-## Key Concepts
-
-### Telemetry Generation vs. Collection
-- Telemetry generation (Sysmon, Windows Event Log) and collection (Splunk UF, Wazuh agent) are separate systems
-- A running service does not guarantee network accessibility; firewall scope and connectivity must be validated
-- Time synchronization is foundational for event correlation across multiple hosts
-
-### Detection Philosophy
-- **Build controls, test controls, break controls, improve controls**
-- Validate detections using live attacks before rolling to production
-- Reduce false positives iteratively based on environment tuning
-- Establish correlation logic to chain related events into incident timelines
-
-### SOC Analyst Maturity
-- **SOC 1**: Triage, validation, basic containment, analyst notes
-- **SOC 2**: Deeper investigation, correlation, escalation, root cause analysis
-- **SOC 3**: Strategic recommendations, threat hunting, process improvement
-
----
-
-## Next Steps
-
-1. Complete Phase 1.5 telemetry reliability monitoring (heartbeat validation, ingestion delay analysis)
-2. Populate `detections/splunk/` with queries tuned to your live Splunk environment
-3. Execute controlled attack simulations against WIN-WS01
-4. Validate each detection and capture sanitized evidence in `evidence/`
-5. Build incident response playbooks based on observed attack patterns
-6. Iterate on detection logic and false positive tuning
-
----
+- Confirm SPL syntax and field mappings in the live Splunk environment.
+- Confirm Sigma rule syntax and intended backend compatibility.
+- Run controlled simulations before claiming detection validation.
+- Capture and sanitize evidence before publishing screenshots or investigation writeups.
+- Review any lab-specific IP addresses or hostnames before public release.
 
 ## References
 
-- **MITRE ATT&CK Framework** — https://attack.mitre.org/
-- **Sigma Rules** — https://github.com/SigmaHQ/sigma
-- **Windows Event Log IDs** — 4625, 4624, 4672, etc.
-- **Sysmon Event IDs** — 1 (Process Create), 10 (LSASS Access), 12/13 (Registry), 22 (DNS Query)
-
----
+- [MITRE ATT&CK](https://attack.mitre.org/)
+- [Sigma project](https://github.com/SigmaHQ/sigma)
+- Windows Security Event IDs: 4625, 4624, 4672.
+- Sysmon Event IDs: 1, 10, 12, 13, 22.
 
 ## Project Owner
 
-Aaron Mitchell Oldham
-
----
-
-## Last Updated
-
-2026-06-10
-
----
-
-*This is a practical, hands-on learning environment designed to develop SOC analyst skills through realistic attack simulation and detection engineering.*
+Aaron Oldham
