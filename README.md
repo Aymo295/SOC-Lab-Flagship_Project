@@ -67,7 +67,7 @@ Build a realistic SOC environment focused on telemetry validation, detection eng
 5. **Impact**: Timeline reconstruction, containment planning, business impact assessment
 
 ### Detection Coverage
-- `detections/splunk/` — production-ready SPL queries for each detection
+- `detections/splunk/` — experimental SPL searches for validation and tuning
 - `detections/sigma/` — portable detection rules for portability and future SIEM migration
 - `docs/response-playbooks.md` — SOC 1/2 analyst workflows and triage steps
 

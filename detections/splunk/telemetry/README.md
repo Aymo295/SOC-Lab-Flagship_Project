@@ -1,18 +1,18 @@
-"""
-Detection: Telemetry Health & Ingestion Monitoring
-Purpose: Monitor Splunk ingestion health, source silence, and time drift
-Detection Method: Meta-search and ingestion monitoring
-Expected Log Sources: Internal Splunk index, Sysmon, Windows Events
+# Telemetry Health and Ingestion Monitoring
 
-LIVE ADAPTATION REQUIRED:
-- Verify host names and sourcetypes match your environment
-- Adjust threshold for ingestion delay based on acceptable SLA
-- Set time window for silence detection (e.g., 10 minutes)
-"""
+## Purpose
 
-This folder contains separate telemetry health searches:
+Monitor Splunk ingestion health, source silence, and event-volume baselines.
 
-- `ingestion-delay.spl` - ingestion delay analysis
-- `source-silence.spl` - source silence detection
-- `sysmon-event-volume.spl` - Sysmon event count baseline
-- `security-event-volume.spl` - Windows Security event volume baseline
+## Live adaptation required
+
+- Verify hostnames and sourcetypes.
+- Adjust ingestion-delay thresholds.
+- Configure the silence-detection window.
+
+## Searches
+
+- `ingestion-delay.spl` - calculates `_indextime - _time` for each sourcetype to detect ingestion lag.
+- `source-silence.spl` - identifies sources that have not reported data within the configured window.
+- `sysmon-event-volume.spl` - monitors Sysmon event ingestion for event-volume baselining.
+- `security-event-volume.spl` - monitors Windows Security event ingestion for event-volume baselining.

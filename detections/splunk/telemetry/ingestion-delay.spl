@@ -1,6 +1,3 @@
-# Ingestion Delay Analysis
-# Calculate _indextime - _time for each sourcetype to detect ingestion lag
-
 index=main host=WIN-WS01
 | eval indexing_delay=_indextime - _time
 | stats avg(indexing_delay) as avg_delay, max(indexing_delay) as max_delay,
