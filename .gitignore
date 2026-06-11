@@ -12,6 +12,8 @@ Desktop.ini
 # Logs and runtime data
 logs/
 *.log
+windows_events_private.txt
+**/windows_events_private.txt
 
 # Environment
 .env
