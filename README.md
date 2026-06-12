@@ -25,6 +25,7 @@ The project is intentionally evidence-driven. Planned work, draft detections, an
 ## Repository Navigation
 
 - [Lab overview](docs/lab-overview.md) - environment summary, telemetry status, validation checklist, troubleshooting, and next steps.
+- [Troubleshooting evidence](docs/troubleshooting/README.md) - documented setup and telemetry troubleshooting case studies with curated screenshots.
 - [Response playbooks](docs/response-playbooks.md) - SOC 1 and SOC 2 triage workflows for the planned detection areas.
 - [Evidence handling](docs/evidence-handling.md) - guidance for exporting, preserving, and sanitizing investigation evidence.
 - [Splunk detections](detections/splunk/) - experimental SPL searches grouped by detection category.

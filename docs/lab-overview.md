@@ -154,6 +154,8 @@
 
 ## Troubleshooting Checklist
 
+See [Troubleshooting Evidence](troubleshooting/README.md) for documented setup and telemetry troubleshooting case studies with curated screenshots.
+
 ### Splunk Forwarder Not Sending Data
 - [ ] Check forwarder service status: `Get-Service SplunkForwarder` on WIN-WS01
 - [ ] Verify UF outputs.conf points to Splunk Enterprise IP and port 9997
