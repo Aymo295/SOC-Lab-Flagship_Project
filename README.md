@@ -102,6 +102,7 @@ Detection content is organized under:
 
 * [Lab Overview](docs/lab-overview.md) — environment details, telemetry status, validation guidance, and project notes.
 * [Troubleshooting Case Studies](docs/troubleshooting/README.md) — documented ingestion, permissions, service, connectivity, and time-synchronization issues.
+* [Telemetry Validation Evidence](docs/telemetry-validation.md) — screenshots showing Splunk forwarding, Windows/Sysmon ingestion, Wazuh agent status, and time synchronization validation.
 * [Response Playbooks](docs/response-playbooks.md) — SOC analyst triage and investigation workflows.
 * [Splunk Detections](detections/splunk/) — experimental SPL searches grouped by detection category.
 * [Sigma Detections](detections/sigma/) — portable draft rules grouped by detection category.
